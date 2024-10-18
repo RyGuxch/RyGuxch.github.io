@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>点云数据</title>
+      <link href="/2024/10/18/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E7%82%B9%E4%BA%91%E6%95%B0%E6%8D%AE/"/>
+      <url>/2024/10/18/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E7%82%B9%E4%BA%91%E6%95%B0%E6%8D%AE/</url>
+      
+        <content type="html"><![CDATA[<h1 id="点云数据"><a href="#点云数据" class="headerlink" title="点云数据"></a>点云数据</h1><h2 id="什么是点云数据"><a href="#什么是点云数据" class="headerlink" title="什么是点云数据"></a>什么是点云数据</h2><p>点云是点的集合，相较于传统二维图像，点云提供了深度信息，即点云直接提供了三维空间的数据，每一点具有坐标$x,y,z$。</p><h2 id="点云数据获取"><a href="#点云数据获取" class="headerlink" title="点云数据获取"></a>点云数据获取</h2><p>激光雷达$(LiDAR)$、立体视觉</p><h2 id="点云数据特性"><a href="#点云数据特性" class="headerlink" title="点云数据特性"></a>点云数据特性</h2><ul><li>无序性：点的排列不影响数据本身</li><li>近密远疏：激光扫描、视角影响</li><li>非结构化<h2 id="点云任务"><a href="#点云任务" class="headerlink" title="点云任务"></a>点云任务</h2></li><li>点云分割</li><li>点云补全</li><li>点云检测</li><li>分类</li><li>点云生成</li><li>点云配准<h2 id="点云特征"><a href="#点云特征" class="headerlink" title="点云特征"></a>点云特征</h2></li></ul><h2 id="PointNet"><a href="#PointNet" class="headerlink" title="PointNet"></a>PointNet</h2><h3 id="基本出发点"><a href="#基本出发点" class="headerlink" title="基本出发点"></a>基本出发点</h3><p><strong>由于点云的无序性，端到端$(end-to-end)$模型需要具有置换不变性</strong></p><script type="math/tex; mode=display">f(x_1,x_2,...,x_n) = \gamma g(h(x_1),h(x_2),...,h(x_n))</script><p>即将原始特征$MLP$升维后取最大值作为输出特征，再通过$MLP$进行分类。<br><img src="/img/image.png" alt="alt text"><br><strong>没有考虑局部特征融合</strong></p><h3 id="PintNet"><a href="#PintNet" class="headerlink" title="PintNet++"></a>PintNet++</h3><p><strong>基于半径选择局部区域，对区域进行卷积特征提取</strong><br><img src="/img/image2.png" alt="alt text"></p><h4 id="最远点采样"><a href="#最远点采样" class="headerlink" title="最远点采样"></a>最远点采样</h4><script type="math/tex; mode=display">集合U是点云集合，集合A是已采样的点集合，对于B=U-A，计算b \in B，计算d_b=min(d_{ba})，a \in A，最后采样点c=b', d_{b'}=max(d_b)</script><h4 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h4><p>由于卷积操作需求，需要固定每个簇内点的数量（少则复制最近，多则删除最远）</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 深度学习 </category>
+          
+          <category> 点云数据 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 点云数据 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>封印序列</title>
       <link href="/2024/08/25/%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%B0%81%E5%8D%B0%E5%BA%8F%E5%88%97/"/>
       <url>/2024/08/25/%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%B0%81%E5%8D%B0%E5%BA%8F%E5%88%97/</url>
@@ -192,9 +219,9 @@
           
           <category> 动态规划 </category>
           
-          <category> 重复覆盖 </category>
-          
           <category> 状压DP </category>
+          
+          <category> 重复覆盖 </category>
           
       </categories>
       
@@ -763,9 +790,9 @@
       
         <tags>
             
-            <tag> 动态规划 </tag>
-            
             <tag> 状压DP </tag>
+            
+            <tag> 动态规划 </tag>
             
         </tags>
       
@@ -794,9 +821,9 @@
       
         <tags>
             
-            <tag> 动态规划 </tag>
-            
             <tag> 状压DP </tag>
+            
+            <tag> 动态规划 </tag>
             
         </tags>
       
