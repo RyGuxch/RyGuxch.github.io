@@ -4,6 +4,58 @@
   
     
     <entry>
+      <title>MV2DFusion</title>
+      <link href="/2024/11/20/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/MV2DFusion/"/>
+      <url>/2024/11/20/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/MV2DFusion/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a><strong>Introduction</strong></h1><p>不同模态的传感器能够捕获物体的不同属性，有助于从多模态中识别物体：  </p><ul><li><strong>图像</strong>含有丰富的纹理信息，但缺乏深度信息（相机到图像的投影属于$ill$-$posed$问题）。  </li><li><strong>点云</strong>能够提供精确的三维空间数据，但缺少丰富的语义信息，且由于稀疏性，难以捕捉远距离的物体。<br>为了利用两种模态的优势，提出<strong>多模态融合方法</strong>。传统方法主要分为两类：  </li></ul><ol><li><strong>特征级融合</strong>：将不同模态映射到统一的特征空间（如$BEV$），或通过统一的注意力机制进行聚合，但难以充分挖掘原始模态中的目标先验信息。  </li><li><strong>提议级融合</strong>：先生成各模态的提议，再进行统一融合，但方法往往倾向于单一模态。<br>针对上述不足，提出了<strong>MV2DFusion</strong>，其特点为：  </li></ol><ul><li>充分利用模态特定的语义特点；  </li><li>允许集成任意类型的2D、3D检测器；  </li><li>融合策略具有稀疏性，适用于长距离场景；  </li><li>轻松扩展至4D场景。</li></ul><hr><h1 id="Related-Work"><a href="#Related-Work" class="headerlink" title="Related Work"></a><strong>Related Work</strong></h1><h2 id="LiDAR-based-3D-Detection"><a href="#LiDAR-based-3D-Detection" class="headerlink" title="LiDAR-based 3D Detection"></a><strong>LiDAR-based 3D Detection</strong></h2><ol><li><strong>Point-based</strong>：直接利用3D点云数据进行检测（如<strong>PointCNN</strong>、<strong>3DSSD</strong>、<strong>FSD</strong>）。  </li><li><strong>Voxel-based</strong>：将点云转化为稀疏体素进行处理（如<strong>SECOND</strong>、<strong>CenterPoint</strong>、<strong>Transfusion-L</strong>）。  </li><li><strong>Pillar-based</strong>：将点云投影到2D柱状体平面，使用2D检测方法。  </li><li><strong>Range-based</strong>：将点云映射到2D平面，进行检测。<h2 id="Camera-based-3D-Detection"><a href="#Camera-based-3D-Detection" class="headerlink" title="Camera-based 3D Detection"></a><strong>Camera-based 3D Detection</strong></h2>使用2D检测器的升级版构建3D检测器：  </li></ol><ul><li><strong>CenterNet</strong>  </li><li><strong>FCOS3D</strong>  </li><li><strong>BEV</strong>  </li><li><strong>DETR</strong>  </li><li><strong>MV2D</strong><h2 id="Fusion-based-3D-Detection"><a href="#Fusion-based-3D-Detection" class="headerlink" title="Fusion-based 3D Detection"></a><strong>Fusion-based 3D Detection</strong></h2></li><li><strong>SD-Fusion</strong>  </li><li><strong>BEV</strong>  </li><li><strong>CMT</strong>  </li><li><strong>SparseFusion</strong></li></ul><hr><h1 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a><strong>Motivation</strong></h1><ol><li><strong>多模态信息的互补性</strong> $\Rightarrow$ 模态融合的重要性；  </li><li><strong>特征融合过程中的偏差</strong> $\Rightarrow$ 提议级融合的优化需求；  </li><li><strong>复杂计算开销</strong> $\Rightarrow$ 稀疏策略以降低成本。</li></ol><hr><h1 id="Methodology"><a href="#Methodology" class="headerlink" title="Methodology"></a><strong>Methodology</strong></h1><h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a><strong>Overview</strong></h2><p>模型接受多视图图像和点云作为输入，经过以下步骤得到3D检测结果：  </p><ol><li>各模态通过独立的特征提取器提取特征，并分别生成2D/3D检测结果；  </li><li>查询生成器生成图像查询和点云查询；  </li><li>在融合解码器中更新查询，整合多模态信息形成最终3D预测。<br>框架示意图如下：<br><img src="/img/MF0.png" alt="framework"><h2 id="模态特定的目标语义"><a href="#模态特定的目标语义" class="headerlink" title="模态特定的目标语义"></a><strong>模态特定的目标语义</strong></h2>通过提取模态特定的目标语义进行多模态检测，保留模态独特优势，同时通过稀疏性降低计算和内存需求。<h3 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a><strong>特征提取</strong></h3></li><li><strong>图像模态</strong>：利用特征金字塔从多视图图像中提取特征集合，通过$ROI$-$Align$对齐（对齐过程中会丢失相机几何信息）。使用任意检测头得到2D检测集合${b_v^{img}}$。  </li><li><strong>点云模态</strong>：采用基于稀疏体素的特征提取网络和检测头，得到3D边界框$b^{pc}$。<h3 id="查询生成"><a href="#查询生成" class="headerlink" title="查询生成"></a><strong>查询生成</strong></h3>基于$Transformer$的查询包含两部分：<strong>内容</strong>和<strong>位置</strong>。<h4 id="点云查询"><a href="#点云查询" class="headerlink" title="点云查询"></a><strong>点云查询</strong></h4>目标的世界坐标作为查询的位置部分，内容部分融合外观特征和几何特征：<script type="math/tex; mode=display">q^{pc} = (c^{pc}, r^{pc}) \tag{1}</script></li></ol><p>其中：</p><script type="math/tex; mode=display">c^{pc} = MLP(o^{pc} + MLP(SinPos(b^{pc}))) \tag{2}</script><h4 id="图像查询"><a href="#图像查询" class="headerlink" title="图像查询"></a><strong>图像查询</strong></h4><p>提出<strong>不确定性感知图像查询</strong>，其内容部分为$RoI$外观特征并嵌入相机内参的几何特征，位置部分用概率分布表示：  </p><script type="math/tex; mode=display">q^{img} = \{ q_v^{img} = (c_v^{img}, s_v^{img}, u_v^{img}) \ | \ 1 \leq v \leq N^{img} \} \tag{3}</script><p>其中：</p><script type="math/tex; mode=display">o_v^{img} = RoI\text{-}Align(F_v^{img}, b_v^{img}) \tag{4}</script><script type="math/tex; mode=display">c_v^{img} = MLP([Pool(Conv(o_v^{img})); Flat(K_v)]) \tag{5}</script><script type="math/tex; mode=display">[s^{2d}; u^{logit}] = MLP(c^{img}) \tag{6}</script><script type="math/tex; mode=display">u^{img} = softmax(u^{logit}) \tag{7}</script><p>结合$s^{2d}$和深度估计，通过相机到真实世界的投影，计算出3D采样位置$S^{img}$。</p><h3 id="模态信息融合"><a href="#模态信息融合" class="headerlink" title="模态信息融合"></a>模态信息融合</h3><hr>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Object Detection </tag>
+            
+            <tag> Multi-modal </tag>
+            
+            <tag> Multi-view </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>计算机视觉</title>
+      <link href="/2024/11/07/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/"/>
+      <url>/2024/11/07/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机视觉 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机视觉 </tag>
+            
+            <tag> 成像原理 </tag>
+            
+            <tag> 立体重建 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Object as Query:Lifting any 2D Object Detector to 3D Detection</title>
       <link href="/2024/11/06/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/MV2D/MV2D/"/>
       <url>/2024/11/06/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/MV2D/MV2D/</url>
@@ -240,9 +292,9 @@
           
           <category> 动态规划 </category>
           
-          <category> 重复覆盖 </category>
-          
           <category> 状压DP </category>
+          
+          <category> 重复覆盖 </category>
           
       </categories>
       
